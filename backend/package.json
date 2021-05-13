@@ -18,13 +18,18 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js"
   },
   "dependencies": {
     "@nestjs/common": "^7.0.0",
     "@nestjs/core": "^7.0.0",
     "@nestjs/platform-express": "^7.0.0",
     "@nestjs/typeorm": "^7.1.5",
+    "argon2": "^0.27.2",
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1",
+    "jsonwebtoken": "^8.5.1",
     "pg": "^8.6.0",
     "postgresql": "0.0.1",
     "reflect-metadata": "^0.1.13",
