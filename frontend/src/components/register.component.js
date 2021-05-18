@@ -1,5 +1,5 @@
 import { Button, Form, Card, Container, Row } from 'react-bootstrap';
-import { axios } from 'axios';
+import axios from 'axios';
 import React, { Component } from 'react';
 
 class RegisterForm extends Component {
@@ -8,30 +8,36 @@ class RegisterForm extends Component {
 
         this.state = {
             username: "",
-            password: "",
-            passwordConfirmation: "",
-            registerError: ""
+            password: ""
         }
-
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
-    handleSubmit(event) {
+
+    setUsername = (event) => {
+        console.log("handle change")
+        this.setState({ username: event.target.value });
+    }
+
+    setPassword = (event) => {
+        console.log("handle change")
+        this.setState({ password: event.target.value });
+    }
+
+    handleSubmit = (event) => {
         const {
             username,
             password,
-            passwordConfirmation
         } = this.state;
 
         axios.post("http://localhost:3000/User/", {
-            data: {
+            user : {
                 username: username,
-                password: password,
-                passwordConfirmation: passwordConfirmation
+                password: password
             }
         },
         { withCredentials: true }
-        ).then(response => {
-            console.log("registration res", response);
+        )
+        .then(response => {
+            console.log(response)
         })
         .catch(error => {
             console.log("registration error", error);
@@ -50,22 +56,17 @@ class RegisterForm extends Component {
 
                                     <Form.Group controlId="formBasicEmail">
                                         <Form.Label>Username</Form.Label>
-                                        <Form.Control placeholder="Enter Username"/>
+                                        <Form.Control value={this.state.username} onChange={this.setUsername} required placeholder="Enter Username"/>
                                     </Form.Group>
 
 
                                     <Form.Group controlId="formBasicPassword">
                                     <Form.Label>password</Form.Label>
-                                    <Form.Control type="password" placeholder="Enter your password"/>
-                                    </Form.Group>
-
-                                    <Form.Group controlId="formBasicPassword">
-                                    <Form.Label>Password confirmation</Form.Label>
-                                    <Form.Control type="password" placeholder="Confirm your password"/>
+                                    <Form.Control value={this.state.password} onChange={this.setPassword} required type="password" placeholder="Enter your password"/>
                                     </Form.Group>
 
                                     <div className="d-flex justify-content-center">
-                                        <Button variant="primary" style={{width: "100%" }} >Submit</Button>{' '}
+                                        <Button type="submit" variant="primary" style={{width: "100%" }} >Submit</Button>{' '}
                                     </div>
                                 </Form>
                             </Card.Body>
