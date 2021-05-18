@@ -13,12 +13,10 @@ class RegisterForm extends Component {
     }
 
     setUsername = (event) => {
-        console.log("handle change")
         this.setState({ username: event.target.value });
     }
 
     setPassword = (event) => {
-        console.log("handle change")
         this.setState({ password: event.target.value });
     }
 
@@ -33,8 +31,7 @@ class RegisterForm extends Component {
                 username: username,
                 password: password
             }
-        },
-        { withCredentials: true }
+        }
         )
         .then(response => {
             console.log(response)

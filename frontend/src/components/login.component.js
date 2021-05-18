@@ -24,8 +24,7 @@ class LoginForm extends Component {
                 username: username,
                 password: password
             }
-        },
-        { withCredentials: true }
+        }
         ).then(response => {
             console.log("registration res", response);
         })
