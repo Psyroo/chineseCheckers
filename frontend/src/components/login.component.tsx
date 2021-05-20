@@ -1,9 +1,9 @@
 import { Button, Form, Card, Container, Row } from 'react-bootstrap';
-import { axios } from 'axios';
+import axios from 'axios';
 import React, { Component } from 'react';
 
-class LoginForm extends Component {
-    constructor(props) {
+class LoginForm extends Component<{}, { username: string, password: string }> {
+    constructor(props: any) {
         super(props);
 
         this.state = {
@@ -13,7 +13,7 @@ class LoginForm extends Component {
 
         this.handleSubmit = this.handleSubmit.bind(this);
     }
-    handleSubmit(event) {
+    handleSubmit(event: any) {
         const {
             username,
             password

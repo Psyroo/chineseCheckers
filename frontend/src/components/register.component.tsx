@@ -2,8 +2,8 @@ import { Button, Form, Card, Container, Row } from 'react-bootstrap';
 import axios from 'axios';
 import React, { Component } from 'react';
 
-class RegisterForm extends Component {
-    constructor(props) {
+class RegisterForm extends Component<{}, { username: string, password: string }> {
+    constructor(props: any) {
         super(props);
 
         this.state = {
@@ -12,15 +12,15 @@ class RegisterForm extends Component {
         }
     }
 
-    setUsername = (event) => {
+    setUsername = (event: any) => {
         this.setState({ username: event.target.value });
     }
 
-    setPassword = (event) => {
+    setPassword = (event: any) => {
         this.setState({ password: event.target.value });
     }
 
-    handleSubmit = (event) => {
+    handleSubmit = (event: any) => {
         const {
             username,
             password,
