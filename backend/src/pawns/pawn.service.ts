@@ -8,12 +8,12 @@ export class PawnService {
         
         let pawnsPlace: Array<Pawn>;
         if (teamsNumber >= 2) {
-            for (let i = 0; i < 25; i ++) {
+            for (let i = 0; i < 17; i ++) {
                 for (let j = 0; i < 25; j ++) {
                     if (board[i][j] === 'r' || board[i][j] === 'v') {
                         const pawn: Pawn = {
-                            x: i,
-                            y: j,
+                            x: j,
+                            y: i,
                             team: board[i][j]
                         }
                         pawnsPlace.push(pawn);
@@ -26,8 +26,8 @@ export class PawnService {
                 for (let j = 0; i < 25; j ++) {
                     if (board[i][j] === 'o') {
                         const pawn: Pawn = {
-                            x: i,
-                            y: j,
+                            x: j,
+                            y: i,
                             team: board[i][j]
                         }
                         pawnsPlace.push(pawn);
@@ -40,8 +40,8 @@ export class PawnService {
                 for (let j = 0; i < 25; j ++) {
                     if (board[i][j] === 'm') {
                         const pawn: Pawn = {
-                            x: i,
-                            y: j,
+                            x: j,
+                            y: i,
                             team: board[i][j]
                         }
                         pawnsPlace.push(pawn);
@@ -54,8 +54,8 @@ export class PawnService {
                 for (let j = 0; i < 25; j ++) {
                     if (board[i][j] === 'b') {
                         const pawn: Pawn = {
-                            x: i,
-                            y: j,
+                            x: j,
+                            y: i,
                             team: board[i][j]
                         }
                         pawnsPlace.push(pawn);
@@ -68,8 +68,8 @@ export class PawnService {
                 for (let j = 0; i < 25; j ++) {
                     if (board[i][j] === 'j') {
                         const pawn: Pawn = {
-                            x: i,
-                            y: j,
+                            x: j,
+                            y: i,
                             team: board[i][j]
                         }
                         pawnsPlace.push(pawn);
