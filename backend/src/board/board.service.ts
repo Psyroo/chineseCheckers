@@ -3,7 +3,8 @@ import { Injectable } from "@nestjs/common";
 @Injectable()
 export class BoardService {
 
-    public createBoard() {
+    public createBoard(): Array<Array<string>> {
+        
         const board = [
             ['z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'r', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z'],
             ['z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'r', 'z', 'r', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z'],
@@ -22,7 +23,8 @@ export class BoardService {
             ['z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'v', 'z', 'v', 'z', 'v', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z'],
             ['z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'v', 'z', 'v', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z'],
             ['z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'v', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z'],
-            ['z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z']            
-        ]
+            ['z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z', 'z']]
+        
+        return board
     }
 }
