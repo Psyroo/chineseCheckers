@@ -34,9 +34,9 @@ export class RoomGateway {
     }
 
     @SubscribeMessage('joinRoom')
-    handleJoinRoom(client: Socket, room: string) {
-        client.join(room)
-        client.emit('joinedRoom', room);
+    handleJoinRoom(client: Socket, roomId: string) {
+        client.join(roomId)
+        client.emit('joinedRoom', roomId);
     }
 
 }
