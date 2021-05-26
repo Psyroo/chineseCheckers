@@ -18,4 +18,37 @@ export class RoomService {
         this.pawns = this.pawnService.initPawns(teamsNumber, this.board);
         return 0
     }
+
+    checkNextCase(coordinates: { oldX: number, oldY: number, newX: number, newY: number }): boolean {
+        if ((coordinates.newX - coordinates.oldX === 1 && coordinates.newY - coordinates.oldY === 1)
+        || (coordinates.newX - coordinates.oldX === -1 && coordinates.newY - coordinates.oldY === 1)
+        || (coordinates.newX - coordinates.oldX === 1 && coordinates.newY - coordinates.oldY === -1)
+        || (coordinates.newX - coordinates.oldX === -1 && coordinates.newY - coordinates.oldY === -1)) {
+            return true;
+        }
+    }
+
+    updatePawnPlace(coordinates: { oldX: number, oldY: number, newX: number, newY: number }): void {
+        this.pawns.forEach(pawn => {
+            if (pawn.x === coordinates.oldX && pawn.y === coordinates.oldY) {
+                pawn.x = coordinates.newX;
+                pawn.y = coordinates.newY;
+            }
+        });
+    }
+
+    public movePawn(coordinates: { oldX: number, oldY: number, newX: number, newY: number }): boolean {
+            if (this.board[coordinates.newX][coordinates.newY] === 'z') {
+            return false;
+        }
+        const locationAlreadyTaken = this.pawns.some(p => p.x === coordinates.newX && p.y === coordinates.newY)
+        if (locationAlreadyTaken) {
+            return false;
+        }
+        if (this.checkNextCase(coordinates)) {
+            this.updatePawnPlace(coordinates);
+            return true;
+        }
+        return true
+    }
 }
