@@ -8,8 +8,7 @@ export class RoomGateway {
 
     parties: Array<string>
     
-    public constructor (parties: Array<string>, private roomService: RoomService) {
-        this.parties = parties;
+    public constructor (private roomService: RoomService) {
     }
 
     @WebSocketServer()
