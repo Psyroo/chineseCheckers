@@ -4,7 +4,7 @@ import { User } from './users.entity';
 import { UserRO } from './users.interface';
 import { UsersService } from './users.service';
 
-@Controller('User')
+@Controller('user')
 export class UsersController {
 
     constructor(private readonly userService: UsersService) {}

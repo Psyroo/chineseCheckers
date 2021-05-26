@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PawnService } from "src/pawns/pawn.service";
 import { BoardService } from "../board/board.service";
 import { Pawn } from "../pawns/pawn.interface";
+import { v1 as uuidv1 } from 'uuid';
 
 @Injectable()
 export class RoomService {
@@ -11,6 +12,10 @@ export class RoomService {
 
     public constructor(private boardService: BoardService, private pawnService: PawnService) {
         
+    }
+
+    public createRoom(): string {
+        return uuidv1();
     }
 
     public startGame(teamsNumber: number): number {
