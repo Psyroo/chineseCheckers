@@ -1,7 +1,7 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Socket, Server } from 'socket.io'
 import { RoomService } from "./room.service";
-const uniqid = require('uniqid');
+import { v1 as uuidv1 } from 'uuid'
 
 @WebSocketGateway({ namespace: '/room' })
 export class RoomGateway {
@@ -21,22 +21,15 @@ export class RoomGateway {
 
     @SubscribeMessage('createRoom')
     handleCreateRoom(client: Socket): void {
-        let id: string | undefined;
-
-        while (id === undefined) {
-            id = uniqid();
-
-            if (this.parties.includes(id))
-                id = undefined;
-        }
+       const id = uuidv1();
         client.join(id);
-        client.to(id).emit('Room Created', { room: id });
+        client.emit('roomCreated', { room: id });
     }
 
     @SubscribeMessage('startGame')
     handleStartGame(client: Socket, roomId: string): void {
         this.roomService.startGame(6);
-        this.server.to(roomId).emit('game start');
+        this.server.to(roomId).emit('gameStarted');
     }
 
     @SubscribeMessage('movePawn')
