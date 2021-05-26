@@ -1,4 +1,5 @@
 import RegisterForm from "../components/register.component"
+import React from "react"
 
 function registerPage() {
     return (
