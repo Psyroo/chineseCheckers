@@ -5,6 +5,8 @@ import React, { Component } from 'react'
 import registerPage from './pages/register';
 import loginPage from './pages/login';
 import gameBoard from './pages/game';
+import Home from './pages/home';
+import Room from './pages/room';
 
 class App extends Component {
   render() {
@@ -16,10 +18,11 @@ class App extends Component {
           {/* <li><Link to={'/about'}>About</Link></li> */}
         </ul>
         <Switch>
-          {/* <Route exact path='/' component={Home} /> */}
+          <Route exact path='/' component={Home} />
           <Route path='/register' component={registerPage} />
           <Route path='/login' component={loginPage} />
           <Route path='/game' component={gameBoard} />
+          <Route path='/room/:id' component={Room} />
         </Switch>
       </Router>
     );

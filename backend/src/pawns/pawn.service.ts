@@ -5,10 +5,9 @@ import { Pawn } from "./pawn.interface";
 export class PawnService {
 
     public initPawns(teamsNumber: number, board: Array<Array<string>>): Array<Pawn> {
-        
-        let pawnsPlace: Array<Pawn>;
+        let pawnsPlace: Array<Pawn> = [];
         for (let i = 0; i < 17; i ++) {
-            for (let j = 0; i < 25; j ++) {
+            for (let j = 0; j < 25; j ++) {
                 if (teamsNumber >= 2) {
                     if (board[i][j] === 'r' || board[i][j] === 'v') {
                         const pawn: Pawn = {

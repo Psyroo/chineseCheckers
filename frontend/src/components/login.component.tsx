@@ -55,7 +55,7 @@ class LoginForm extends Component<{}, { username: string, password: string }> {
                                     </Form.Group>
 
                                     <div className="d-flex justify-content-center">
-                                        <Button variant="primary" style={{width: "100%" }} >Login</Button>{' '}
+                                        <Button type="submit" variant="primary" style={{width: "100%" }} >Login</Button>{' '}
                                     </div>
                                 </Form>
                             </Card.Body>
