@@ -2,11 +2,13 @@ import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayInit, Subsc
 import { Socket, Server } from 'socket.io'
 import { RoomService } from "./room.service";
 import { v1 as uuidv1 } from 'uuid'
+import { Pawn } from "src/pawns/pawn.interface";
 
 @WebSocketGateway()
 export class RoomGateway implements OnGatewayInit {
 
-    parties: Array<string>
+    private pawns: Array<Pawn>
+    private board: Array<Array<string>>;
     
     public constructor (private roomService: RoomService) {
     }
@@ -32,28 +34,23 @@ export class RoomGateway implements OnGatewayInit {
 
     @SubscribeMessage('startGame')
     handleStartGame(client: Socket, data: {roomId: string}): void {
-        this.roomService.startGame(6);
-        console.log(data.roomId);
-        client.emit('startGame');
-        this.server.to(data.roomId).emit('startGame');
+        this.board = this.roomService.createBoard();
+        this.pawns = this.roomService.createPawns(6, this.board);
+        this.server.to(data.roomId).emit('startGame', this.pawns);
     }
 
     @SubscribeMessage('movePawn')
     handleMovePawn(client: Socket,
     data: { sender: string, roomId: string,
     movement: { oldX: number, oldY: number, newX: number, newY: number } }): void {
-        if (this.roomService.movePawn(data.movement)) {
-            this.server.to(data.roomId).emit('movePawn', data)
-        } else {
-            client.emit('impossibleMove')
-        }
+        this.pawns = this.roomService.movePawn(this.board, this.pawns,data.movement)
+        this.server.to(data.roomId).emit('movePawn', this.pawns)
     }
 
     @SubscribeMessage('joinRoom')
     handleJoinRoom(
         @ConnectedSocket() client: Socket,
         @MessageBody() data: {name: string, roomId: string}): void {
-        console.log('room joined');
         client.join(data.roomId)
         client.emit('joinRoom', data.roomId);
         this.server.to(data.roomId).emit('newPlayer', data.name);

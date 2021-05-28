@@ -6,14 +6,24 @@ export class PawnService {
 
     public initPawns(teamsNumber: number, board: Array<Array<string>>): Array<Pawn> {
         let pawnsPlace: Array<Pawn> = [];
-        for (let i = 0; i < 17; i ++) {
-            for (let j = 0; j < 25; j ++) {
-                if (teamsNumber >= 2) {
-                    if (board[i][j] === 'r' || board[i][j] === 'v') {
+        for (let i = 0; i < 18; i ++) {
+            for (let j = 0; j < 26; j ++) {
+                if (teamsNumber >= 1) {
+                    if (board[i][j] === 'r') {
                         const pawn: Pawn = {
                             x: j,
                             y: i,
-                            team: board[i][j]
+                            team: 'red'
+                        }
+                        pawnsPlace.push(pawn);
+                    }
+                }
+                if (teamsNumber >= 1) {
+                    if (board[i][j] === 'v') {
+                        const pawn: Pawn = {
+                            x: j,
+                            y: i,
+                            team: 'green'
                         }
                         pawnsPlace.push(pawn);
                     }
@@ -23,7 +33,7 @@ export class PawnService {
                         const pawn: Pawn = {
                             x: j,
                             y: i,
-                            team: board[i][j]
+                            team: 'orange'
                         }
                         pawnsPlace.push(pawn);
                     }
@@ -33,7 +43,7 @@ export class PawnService {
                         const pawn: Pawn = {
                             x: j,
                             y: i,
-                            team: board[i][j]
+                            team: "purple"
                         }
                         pawnsPlace.push(pawn);
                     }
@@ -43,7 +53,7 @@ export class PawnService {
                         const pawn: Pawn = {
                             x: j,
                             y: i,
-                            team: board[i][j]
+                            team: "blue"
                         }
                         pawnsPlace.push(pawn);
                     }
@@ -53,7 +63,7 @@ export class PawnService {
                         const pawn: Pawn = {
                             x: j,
                             y: i,
-                            team: board[i][j]
+                            team: "yellow"
                         }
                         pawnsPlace.push(pawn);
                     }
