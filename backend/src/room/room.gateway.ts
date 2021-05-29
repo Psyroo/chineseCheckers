@@ -35,8 +35,9 @@ export class RoomGateway implements OnGatewayInit {
 
     @SubscribeMessage('startGame')
     handleStartGame(client: Socket, data: { roomId: string }): void {
+        const currentGame = this.gamesPlayers.find((game) => game.roomId === data.roomId);
         this.board = this.roomService.createBoard();
-        const pawns = this.roomService.createPawns(6, this.board);
+        const pawns = this.roomService.createPawns(currentGame.players.length, this.board);
         this.games.push({ roomId: data.roomId, pawns: pawns })
         this.server.to(data.roomId).emit('startGame', pawns);
     }
@@ -47,7 +48,7 @@ export class RoomGateway implements OnGatewayInit {
             sender: string, roomId: string,
             movement: { oldX: number, oldY: number, newX: number, newY: number }
         }): void {
-        let currentGame = this.games.find((game) => game.roomId === data.roomId)
+        const currentGame = this.games.find((game) => game.roomId === data.roomId)
         currentGame.pawns = this.roomService.movePawn(this.board, currentGame.pawns, data.movement)
         this.games.map((game) => {
             if (game.roomId === data.roomId) {

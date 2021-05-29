@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button } from 'react-bootstrap';
+import { Button, Col, Form, Row } from 'react-bootstrap';
+import { FaRegCopy } from 'react-icons/fa';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import io from 'socket.io-client';
@@ -70,7 +71,6 @@ const Room = () => {
 
     return (
         <div>
-            <div>Room</div>
             <div>
                 <ul>
                     {players.map((player) =>
@@ -93,7 +93,17 @@ const Room = () => {
                         )}
                     </svg>
                 </div>
-                : <Button onClick={() => { launchGame() }} variant="success">Start the GAME</Button>
+                : <div>
+                    <Row className='align-items-center'>
+                        <Col sm={4} className="my-1">
+                            <span style={{padding: '10px', border: 'solid grey'}}>{roomId}</span>
+                        </Col>
+                        <Col sm={0} className="my-1">
+                            <Button onClick={() => {navigator.clipboard.writeText(roomId)}}><FaRegCopy/></Button>
+                        </Col>
+                    </Row>
+                    <Button onClick={() => { launchGame() }} variant="success">Start the GAME</Button>
+                </div>
             }
         </div>
     )
