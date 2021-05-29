@@ -7,8 +7,8 @@ import { Pawn } from "src/pawns/pawn.interface";
 @WebSocketGateway()
 export class RoomGateway implements OnGatewayInit {
 
-    private games: Array<{ roomId: string, pawns: Array<Pawn>}> = []
-    private gamesPlayers: Array<{roomId: string, players: Array<string>}> = []
+    private games: Array<{ roomId: string, pawns: Array<Pawn> }> = []
+    private gamesPlayers: Array<{ roomId: string, players: Array<string> }> = []
     private board: Array<Array<string>>;
 
     public constructor(private roomService: RoomService) {
@@ -65,7 +65,7 @@ export class RoomGateway implements OnGatewayInit {
         let player: Array<string> = []
         if (this.gamesPlayers.find((room) => room.roomId === data.roomId) === undefined) {
             player.push(data.name)
-            this.gamesPlayers.push({roomId: data.roomId, players: player})
+            this.gamesPlayers.push({ roomId: data.roomId, players: player })
         } else {
             this.gamesPlayers.map((game) => {
                 if (game.roomId === data.roomId) {
