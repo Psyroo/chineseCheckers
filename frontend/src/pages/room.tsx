@@ -18,6 +18,8 @@ const Room = () => {
     const [pawns, setPawns] = useState(BoardInit.initPawns());
     const [movedPawn, setMovedPawn] = useState<{ x: number, y: number, index: number | undefined }>({ x: 0, y: 0, index: undefined });
     const [players, setPlayers] = useState(['']);
+    const [team, setTeam] = useState('black');
+    const [playingTeam, setPlayingTeam] = useState('black');
 
     const location = useLocation<{ roomId: string }>();
     const roomId = location.state.roomId;
@@ -33,7 +35,8 @@ const Room = () => {
             setGameStart(true);
             setPawns(Arraypawns);
         })
-        socket.on('joinRoom', () => {
+        socket.on('joinRoom', (data: { roomId: string, team: string }) => {
+            setTeam(data.team);
         })
         socket.on('movePawn', (Arraypawns: { x: number, y: number, team: string }[]) => {
             movePawn(Arraypawns);
@@ -80,6 +83,7 @@ const Room = () => {
             </div>
             { gameStart
                 ? <div>
+                    <h1 style={{color: `${team}`}}>You are {team}</h1>
                     <svg viewBox='-5 -5 75 75' style={{ background: 'white' }}>
                         <polygon points={outierPoints} stroke='black' strokeWidth='.5'
                             fill='transparent' strokeLinejoin="round" />
@@ -96,10 +100,10 @@ const Room = () => {
                 : <div>
                     <Row className='align-items-center'>
                         <Col sm={4} className="my-1">
-                            <span style={{padding: '10px', border: 'solid grey'}}>{roomId}</span>
+                            <span style={{ padding: '10px', border: 'solid grey' }}>{roomId}</span>
                         </Col>
                         <Col sm={0} className="my-1">
-                            <Button onClick={() => {navigator.clipboard.writeText(roomId)}}><FaRegCopy/></Button>
+                            <Button onClick={() => { navigator.clipboard.writeText(roomId) }}><FaRegCopy /></Button>
                         </Col>
                     </Row>
                     <Button onClick={() => { launchGame() }} variant="success">Start the GAME</Button>

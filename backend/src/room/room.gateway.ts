@@ -10,6 +10,7 @@ export class RoomGateway implements OnGatewayInit {
     private games: Array<{ roomId: string, pawns: Array<Pawn> }> = []
     private gamesPlayers: Array<{ roomId: string, players: Array<string> }> = []
     private board: Array<Array<string>>;
+    private teams: Array<string> = ["red", "green", "orange", "purple", "blue", "yellow"]
 
     public constructor(private roomService: RoomService) {
     }
@@ -64,18 +65,21 @@ export class RoomGateway implements OnGatewayInit {
         @MessageBody() data: { name: string, roomId: string }): void {
         client.join(data.roomId)
         let player: Array<string> = []
+        let team: string = 'black';
         if (this.gamesPlayers.find((room) => room.roomId === data.roomId) === undefined) {
             player.push(data.name)
             this.gamesPlayers.push({ roomId: data.roomId, players: player })
+            team = this.teams[0]
         } else {
             this.gamesPlayers.map((game) => {
                 if (game.roomId === data.roomId) {
                     game.players.push(data.name);
                     player = game.players;
+                    team = this.teams[game.players.length - 1]
                 }
             })
         }
-        client.emit('joinRoom', data.roomId);
+        client.emit('joinRoom', {roomId: data.roomId, team: team});
         this.server.to(data.roomId).emit('newPlayer', player);
     }
 
