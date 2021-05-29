@@ -41,7 +41,7 @@ const Room = () => {
         socket.on('movePawn', (Arraypawns: { x: number, y: number, team: string }[]) => {
             movePawn(Arraypawns);
         })
-        socket.on('impossibleMove', () => {
+        socket.on('wrongMove', () => {
             console.log('movement impossible')
         })
         socket.on('newPlayer', (player: Array<string>) => {
@@ -64,7 +64,8 @@ const Room = () => {
     const socketMovePawn = (x: number, y: number) => {
         socket.emit('movePawn', {
             sender: 'username', roomId: roomId,
-            movement: { oldX: movedPawn.x, oldY: movedPawn.y, newX: x, newY: y }
+            movement: { oldX: movedPawn.x, oldY: movedPawn.y, newX: x, newY: y },
+            team: team
         })
     }
 
@@ -83,7 +84,7 @@ const Room = () => {
             </div>
             { gameStart
                 ? <div>
-                    <h1 style={{color: `${team}`}}>You are {team}</h1>
+                    <h1 style={{ color: `${team}` }}>You are {team}</h1>
                     <svg viewBox='-5 -5 75 75' style={{ background: 'white' }}>
                         <polygon points={outierPoints} stroke='black' strokeWidth='.5'
                             fill='transparent' strokeLinejoin="round" />
