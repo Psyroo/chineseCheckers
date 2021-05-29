@@ -47,7 +47,6 @@ export class RoomService {
     private checkGoodTeam(pawns: Array<Pawn>, team: string, x: number, y: number): boolean {
         const pawn = pawns.find((pawn) => pawn.x === x && pawn.y === y)
         if (pawn.team === team) {
-            console.log('it is true')
             return true;
         }
 
@@ -57,7 +56,6 @@ export class RoomService {
     public checkMovement(board: Array<Array<string>>, pawns: Array<Pawn>,
         coordinates: { oldX: number, oldY: number, newX: number, newY: number }, team: string): boolean {
         if (this.checkGoodTeam(pawns, team, coordinates.oldX, coordinates.oldY) === false) {
-            console.log('poadkpazd')
             return false;
         }
 

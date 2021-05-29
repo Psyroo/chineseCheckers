@@ -31,14 +31,16 @@ const Room = () => {
     useEffect(() => {
         socket.on('connect', () => {
         })
-        socket.on('startGame', (Arraypawns: { x: number, y: number, team: string }[]) => {
+        socket.on('startGame', (Arraypawns: { x: number, y: number, team: string }[], turn: string) => {
             setGameStart(true);
             setPawns(Arraypawns);
+            setPlayingTeam(turn);
         })
         socket.on('joinRoom', (data: { roomId: string, team: string }) => {
             setTeam(data.team);
         })
-        socket.on('movePawn', (Arraypawns: { x: number, y: number, team: string }[]) => {
+        socket.on('movePawn', (Arraypawns: { x: number, y: number, team: string }[], turn: string) => {
+            setPlayingTeam(turn);
             movePawn(Arraypawns);
         })
         socket.on('wrongMove', () => {
@@ -84,7 +86,8 @@ const Room = () => {
             </div>
             { gameStart
                 ? <div>
-                    <h1 style={{ color: `${team}` }}>You are {team}</h1>
+                    <h3 style={{ color: `${team}` }}>You are {team}</h3>
+                    <h1 style={{ color: `${playingTeam}`}}>turn: {playingTeam}</h1>
                     <svg viewBox='-5 -5 75 75' style={{ background: 'white' }}>
                         <polygon points={outierPoints} stroke='black' strokeWidth='.5'
                             fill='transparent' strokeLinejoin="round" />

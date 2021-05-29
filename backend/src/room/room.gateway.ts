@@ -7,7 +7,7 @@ import { Pawn } from "src/pawns/pawn.interface";
 @WebSocketGateway()
 export class RoomGateway implements OnGatewayInit {
 
-    private games: Array<{ roomId: string, pawns: Array<Pawn> }> = []
+    private games: Array<{ roomId: string, pawns: Array<Pawn>, turn: number }> = []
     private gamesPlayers: Array<{ roomId: string, players: Array<string> }> = []
     private board: Array<Array<string>>;
     private teams: Array<string> = ["red", "green", "orange", "purple", "blue", "yellow"]
@@ -37,10 +37,12 @@ export class RoomGateway implements OnGatewayInit {
     @SubscribeMessage('startGame')
     handleStartGame(client: Socket, data: { roomId: string }): void {
         const currentGame = this.gamesPlayers.find((game) => game.roomId === data.roomId);
+       
         this.board = this.roomService.createBoard();
         const pawns = this.roomService.createPawns(currentGame.players.length, this.board);
-        this.games.push({ roomId: data.roomId, pawns: pawns })
-        this.server.to(data.roomId).emit('startGame', pawns);
+        
+        this.games.push({ roomId: data.roomId, pawns: pawns, turn: 0 })
+        this.server.to(data.roomId).emit('startGame', pawns, "red");
     }
 
     @SubscribeMessage('movePawn')
@@ -51,16 +53,27 @@ export class RoomGateway implements OnGatewayInit {
             team: string
         }): void {
         const currentGame = this.games.find((game) => game.roomId === data.roomId)
-        if (!this.roomService.checkMovement(this.board, currentGame.pawns, data.movement, data.team)) {
+        const nbPlayer = (this.gamesPlayers.find((game) => game.roomId === data.roomId)).players.length;
+        let newTurn = 0;
+
+        if (data.team !== this.teams[currentGame.turn]) {
+            client.emit('wrongTurn')
+        } else if (!this.roomService.checkMovement(this.board, currentGame.pawns, data.movement, data.team)) {
             client.emit('wrongMove');
         } else {
             currentGame.pawns = this.roomService.movePawn(this.board, currentGame.pawns, data.movement)
             this.games.map((game) => {
+
                 if (game.roomId === data.roomId) {
                     game.pawns = currentGame.pawns;
+                    game.turn += 1;
+
+                    if (game.turn >= nbPlayer)
+                        game.turn = 0;
+                    newTurn = game.turn;
                 }
             })
-            this.server.to(data.roomId).emit('movePawn', currentGame.pawns);
+            this.server.to(data.roomId).emit('movePawn', currentGame.pawns, this.teams[newTurn]);
         }
     }
 
@@ -71,12 +84,14 @@ export class RoomGateway implements OnGatewayInit {
         client.join(data.roomId)
         let player: Array<string> = []
         let team: string = 'black';
+
         if (this.gamesPlayers.find((room) => room.roomId === data.roomId) === undefined) {
             player.push(data.name)
             this.gamesPlayers.push({ roomId: data.roomId, players: player })
             team = this.teams[0]
         } else {
             this.gamesPlayers.map((game) => {
+
                 if (game.roomId === data.roomId) {
                     game.players.push(data.name);
                     player = game.players;
