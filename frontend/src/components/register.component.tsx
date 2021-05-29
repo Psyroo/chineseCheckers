@@ -26,7 +26,7 @@ class RegisterForm extends Component<{}, { username: string, password: string }>
             password,
         } = this.state;
 
-        axios.post("http://localhost:3000/User/", {
+        axios.post("http://localhost:3000/User", {
             user : {
                 username: username,
                 password: password
