@@ -15,7 +15,8 @@ const Room = () => {
 
     const [gameStart, setGameStart] = useState(false);
     const [pawns, setPawns] = useState(BoardInit.initPawns());
-    const [movedPawn, setMovedPawn] = useState<{x: number, y: number, index: number | undefined}>({ x: 0, y: 0, index: undefined });
+    const [movedPawn, setMovedPawn] = useState<{ x: number, y: number, index: number | undefined }>({ x: 0, y: 0, index: undefined });
+    const [players, setPlayers] = useState(['']);
 
     const location = useLocation<{ roomId: string }>();
     const roomId = location.state.roomId;
@@ -27,17 +28,20 @@ const Room = () => {
     useEffect(() => {
         socket.on('connect', () => {
         })
-        socket.on('startGame', (Arraypawns: {x: number, y:number, team: string}[]) => {
+        socket.on('startGame', (Arraypawns: { x: number, y: number, team: string }[]) => {
             setGameStart(true);
             setPawns(Arraypawns);
         })
         socket.on('joinRoom', () => {
         })
-        socket.on('movePawn', (Arraypawns: {x: number, y:number, team: string}[]) => {
+        socket.on('movePawn', (Arraypawns: { x: number, y: number, team: string }[]) => {
             movePawn(Arraypawns);
         })
         socket.on('impossibleMove', () => {
             console.log('movement impossible')
+        })
+        socket.on('newPlayer', (player: Array<string>) => {
+            setPlayers(player);
         })
         socket.emit('joinRoom', { name: 'username', roomId: roomId })
     }, [socket])
@@ -50,7 +54,7 @@ const Room = () => {
         .reduce((x: any, y: any) => x + ' ' + y, '')
 
     const savePawn = (x: number, y: number, index: number) => {
-        setMovedPawn({x: x, y: y, index: index});
+        setMovedPawn({ x: x, y: y, index: index });
     }
 
     const socketMovePawn = (x: number, y: number) => {
@@ -60,13 +64,20 @@ const Room = () => {
         })
     }
 
-    const movePawn = (Arraypawns: {x: number, y: number, team: string}[]) => {
+    const movePawn = (Arraypawns: { x: number, y: number, team: string }[]) => {
         setPawns(Arraypawns);
     }
 
     return (
         <div>
             <div>Room</div>
+            <div>
+                <ul>
+                    {players.map((player) =>
+                        <li>{player}</li>
+                    )}
+                </ul>
+            </div>
             { gameStart
                 ? <div>
                     <svg viewBox='-5 -5 75 75' style={{ background: 'white' }}>
