@@ -1,9 +1,11 @@
 import axios from 'axios';
-import React from 'react';
-import { Button } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Button, Form } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 
 function Home() {
+
+    const [roomId, setRoomId] = useState('');
 
     const history = useHistory()
 
@@ -21,6 +23,11 @@ function Home() {
         history.push({pathname: '/login'})
     }
 
+    const joinRoom = () => {
+        history.push({pathname: `/room/${roomId}`,
+        state: {roomId: roomId}})
+    }
+
     return (
         <div>
             <div>Welcome</div>
@@ -30,6 +37,14 @@ function Home() {
                         : <p><Button onClick={() => history.push({pathname: '/login'})} variant="outline-primary">Login</Button></p>
                     }
             </div>
+            <Button variant="primary" onClick={() => createRoom()}>Create Game room</Button>
+            <Form onSubmit={joinRoom}>
+                <Form.Group controlId="formRoomId">
+                    <Form.Label>Room Link</Form.Label>
+                    <Form.Control value={roomId} onChange={(event) => {setRoomId(event.target.value)}} required placeholder="Enter Room Link"/>
+                </Form.Group>
+            <Button type="submit" variant="primary" onClick={() => joinRoom()}>Join Room</Button>
+            </Form>
         </div>
     )
 }

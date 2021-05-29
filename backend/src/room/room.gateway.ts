@@ -1,12 +1,14 @@
-import { SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Socket, Server } from 'socket.io'
 import { RoomService } from "./room.service";
 import { v1 as uuidv1 } from 'uuid'
+import { Pawn } from "src/pawns/pawn.interface";
 
-@WebSocketGateway({ namespace: '/room' })
-export class RoomGateway {
+@WebSocketGateway()
+export class RoomGateway implements OnGatewayInit {
 
-    parties: Array<string>
+    private pawns: Array<Pawn>
+    private board: Array<Array<string>>;
     
     public constructor (private roomService: RoomService) {
     }
@@ -14,9 +16,13 @@ export class RoomGateway {
     @WebSocketServer()
     server: Server;
 
+    afterInit(server: any) {
+        console.log('Server started');
+    }
+
     @SubscribeMessage('chatToServer')
-    handleMessage(client: Socket, message: { sender: string, room: string, message: string}): void {
-       this.server.to(message.room).emit('chatToClient', message);
+    handleMessage(client: Socket, data: { sender: string, room: string, message: string}): void {
+       this.server.to(data.room).emit('chatToClient', data.message);
     }
 
     @SubscribeMessage('createRoom')
@@ -27,27 +33,27 @@ export class RoomGateway {
     }
 
     @SubscribeMessage('startGame')
-    handleStartGame(client: Socket, roomId: string): void {
-        this.roomService.startGame(6);
-        this.server.to(roomId).emit('gameStarted');
+    handleStartGame(client: Socket, data: {roomId: string}): void {
+        this.board = this.roomService.createBoard();
+        this.pawns = this.roomService.createPawns(6, this.board);
+        this.server.to(data.roomId).emit('startGame', this.pawns);
     }
 
     @SubscribeMessage('movePawn')
     handleMovePawn(client: Socket,
-    message: { sender: string, roomId: string,
+    data: { sender: string, roomId: string,
     movement: { oldX: number, oldY: number, newX: number, newY: number } }): void {
-        if (this.roomService.movePawn(message.movement)) {
-            this.server.to(message.roomId).emit('movePawn', message)
-        } else {
-            client.emit('impossibleMove')
-        }
+        this.pawns = this.roomService.movePawn(this.board, this.pawns,data.movement)
+        this.server.to(data.roomId).emit('movePawn', this.pawns)
     }
 
     @SubscribeMessage('joinRoom')
-    handleJoinRoom(client: Socket, name: string, roomId: string): void {
-        client.join(roomId)
-        client.emit('joinedRoom', roomId);
-        this.server.to(roomId).emit('newPlayer', name);
+    handleJoinRoom(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: {name: string, roomId: string}): void {
+        client.join(data.roomId)
+        client.emit('joinRoom', data.roomId);
+        this.server.to(data.roomId).emit('newPlayer', data.name);
     }
 
 }
