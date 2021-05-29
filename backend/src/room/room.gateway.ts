@@ -7,10 +7,10 @@ import { Pawn } from "src/pawns/pawn.interface";
 @WebSocketGateway()
 export class RoomGateway implements OnGatewayInit {
 
-    private pawns: Array<Pawn>
+    private games: Array<{ roomId: string, pawns: Array<Pawn> }> = []
     private board: Array<Array<string>>;
-    
-    public constructor (private roomService: RoomService) {
+
+    public constructor(private roomService: RoomService) {
     }
 
     @WebSocketServer()
@@ -21,36 +21,45 @@ export class RoomGateway implements OnGatewayInit {
     }
 
     @SubscribeMessage('chatToServer')
-    handleMessage(client: Socket, data: { sender: string, room: string, message: string}): void {
-       this.server.to(data.room).emit('chatToClient', data.message);
+    handleMessage(client: Socket, data: { sender: string, room: string, message: string }): void {
+        this.server.to(data.room).emit('chatToClient', data.message);
     }
 
     @SubscribeMessage('createRoom')
     handleCreateRoom(client: Socket): void {
-       const id = uuidv1();
+        const id = uuidv1();
         client.join(id);
         client.emit('roomCreated', { room: id });
     }
 
     @SubscribeMessage('startGame')
-    handleStartGame(client: Socket, data: {roomId: string}): void {
+    handleStartGame(client: Socket, data: { roomId: string }): void {
         this.board = this.roomService.createBoard();
-        this.pawns = this.roomService.createPawns(6, this.board);
-        this.server.to(data.roomId).emit('startGame', this.pawns);
+        const pawns = this.roomService.createPawns(6, this.board);
+        this.games.push({ roomId: data.roomId, pawns: pawns })
+        this.server.to(data.roomId).emit('startGame', pawns);
     }
 
     @SubscribeMessage('movePawn')
     handleMovePawn(client: Socket,
-    data: { sender: string, roomId: string,
-    movement: { oldX: number, oldY: number, newX: number, newY: number } }): void {
-        this.pawns = this.roomService.movePawn(this.board, this.pawns,data.movement)
-        this.server.to(data.roomId).emit('movePawn', this.pawns)
+        data: {
+            sender: string, roomId: string,
+            movement: { oldX: number, oldY: number, newX: number, newY: number }
+        }): void {
+        let currentGame = this.games.find((game) => game.roomId === data.roomId)
+        currentGame.pawns = this.roomService.movePawn(this.board, currentGame.pawns, data.movement)
+        this.games.find((game) => {
+            if (game.roomId === data.roomId) {
+                game.pawns = currentGame.pawns;
+            }
+        })
+        this.server.to(data.roomId).emit('movePawn', currentGame.pawns);
     }
 
     @SubscribeMessage('joinRoom')
     handleJoinRoom(
         @ConnectedSocket() client: Socket,
-        @MessageBody() data: {name: string, roomId: string}): void {
+        @MessageBody() data: { name: string, roomId: string }): void {
         client.join(data.roomId)
         client.emit('joinRoom', data.roomId);
         this.server.to(data.roomId).emit('newPlayer', data.name);
