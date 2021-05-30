@@ -1,70 +1,67 @@
 import { Button, Form, Card, Container, Row } from 'react-bootstrap';
 import axios from 'axios';
-import React, { Component } from 'react';
+import { useHistory } from 'react-router-dom';
+import React, { Component, useState } from 'react';
 
-class LoginForm extends Component<{}, { username: string, password: string }> {
-    constructor(props: any) {
-        super(props);
+const LoginForm = () => {
 
-        this.state = {
-            username: "",
-            password: ""
-        }
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+    const history = useHistory()
 
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-    handleSubmit(event: any) {
-        const {
-            username,
-            password
-        } = this.state;
+    const handleSubmit = (event: any) => {
 
-        axios.post("http://localhost:3000/User/login/", {
+        event.preventDefault();
+        axios.post("http://localhost:3000/user/login", {
             user: {
-                username: username,
-                password: password
+                username,
+                password
             }
-        }
-        ).then(response => {
+        }).then(response => {
             console.log("registration res", response);
+            localStorage.setItem(
+                "token", response.data.user.token
+            );
+            localStorage.setItem(
+                "username", username
+            );
+            console.log(username)
+            history.push({pathname: '/'})
         })
         .catch(error => {
             console.log("registration error", error);
         });
-        event.preventDefault();
     }
 
-    render() {
-        return (
-            <div >
-                <Container className="d-flex justify-content-center align-items-center" style={{height: '78vh'}}>
-                    <Row>
-                        <Card style={{ width: '25rem' }}>
-                            <Card.Body>
-                                <Form onSubmit={this.handleSubmit}>
+    return (
+        <div >
+        <Container className="d-flex justify-content-center align-items-center" style={{height: '78vh'}}>
+            <Row>
+                <Card style={{ width: '25rem' }}>
+                    <Card.Body>
+                        <Form onSubmit={handleSubmit}>
 
-                                    <Form.Group controlId="formBasicEmail">
-                                        <Form.Label>Username</Form.Label>
-                                        <Form.Control placeholder="Enter Username"/>
-                                    </Form.Group>
+                            <Form.Group controlId="formBasicEmail">
+                                <Form.Label>Username</Form.Label>
+                                <Form.Control value={username} onChange={(event) => setUsername(event.target.value)} required placeholder="Enter Username"/>
+                            </Form.Group>
 
 
-                                    <Form.Group controlId="formBasicPassword">
-                                    <Form.Label>password</Form.Label>
-                                    <Form.Control type="password" placeholder="Enter your password"/>
-                                    </Form.Group>
+                            <Form.Group controlId="formBasicPassword">
+                            <Form.Label>password</Form.Label>
+                            <Form.Control value={password} onChange={(event) => setPassword(event.target.value)} required type="password" placeholder="Enter your password"/>
+                            </Form.Group>
 
-                                    <div className="d-flex justify-content-center">
-                                        <Button type="submit" variant="primary" style={{width: "100%" }} >Login</Button>{' '}
-                                    </div>
-                                </Form>
-                            </Card.Body>
-                        </Card>
-                    </Row>
-                </Container>
-            </div>
-        );
-    }
+                            <div className="d-flex justify-content-center">
+                                <Button type="submit" variant="primary" style={{width: "100%" }} >Login</Button>
+                            </div>
+                        </Form>
+                    </Card.Body>
+                </Card>
+            </Row>
+        </Container>
+    </div>
+    )
 }
 
 export default LoginForm

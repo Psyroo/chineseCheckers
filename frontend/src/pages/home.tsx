@@ -18,6 +18,11 @@ function Home() {
         })
     }
 
+    const logout = () => {
+        localStorage.removeItem('token')
+        history.push({pathname: '/login'})
+    }
+
     const joinRoom = () => {
         history.push({pathname: `/room/${roomId}`,
         state: {roomId: roomId}})
@@ -26,6 +31,12 @@ function Home() {
     return (
         <div>
             <div>Welcome</div>
+            <div>
+                {localStorage.getItem('token')
+                        ? <p><Button variant="primary" onClick={() => createRoom()}>Create Game room</Button><br /><Button onClick={() => logout()} variant="outline-secondary">Logout</Button></p>
+                        : <p><Button onClick={() => history.push({pathname: '/login'})} variant="outline-primary">Login</Button></p>
+                    }
+            </div>
             <Button variant="primary" onClick={() => createRoom()}>Create Game room</Button>
             <Form onSubmit={joinRoom}>
                 <Form.Group controlId="formRoomId">
