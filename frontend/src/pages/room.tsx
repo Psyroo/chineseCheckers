@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button } from 'react-bootstrap';
+import { Button, Col, Form, Row } from 'react-bootstrap';
+import { FaRegCopy } from 'react-icons/fa';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import io from 'socket.io-client';
@@ -15,7 +16,10 @@ const Room = () => {
 
     const [gameStart, setGameStart] = useState(false);
     const [pawns, setPawns] = useState(BoardInit.initPawns());
-    const [movedPawn, setMovedPawn] = useState<{x: number, y: number, index: number | undefined}>({ x: 0, y: 0, index: undefined });
+    const [movedPawn, setMovedPawn] = useState<{ x: number, y: number, index: number | undefined }>({ x: 0, y: 0, index: undefined });
+    const [players, setPlayers] = useState(['']);
+    const [team, setTeam] = useState('black');
+    const [playingTeam, setPlayingTeam] = useState('black');
 
     const location = useLocation<{ roomId: string }>();
     const roomId = location.state.roomId;
@@ -27,17 +31,23 @@ const Room = () => {
     useEffect(() => {
         socket.on('connect', () => {
         })
-        socket.on('startGame', (Arraypawns: {x: number, y:number, team: string}[]) => {
+        socket.on('startGame', (Arraypawns: { x: number, y: number, team: string }[], turn: string) => {
             setGameStart(true);
             setPawns(Arraypawns);
+            setPlayingTeam(turn);
         })
-        socket.on('joinRoom', () => {
+        socket.on('joinRoom', (data: { roomId: string, team: string }) => {
+            setTeam(data.team);
         })
-        socket.on('movePawn', (Arraypawns: {x: number, y:number, team: string}[]) => {
+        socket.on('movePawn', (Arraypawns: { x: number, y: number, team: string }[], turn: string) => {
+            setPlayingTeam(turn);
             movePawn(Arraypawns);
         })
-        socket.on('impossibleMove', () => {
+        socket.on('wrongMove', () => {
             console.log('movement impossible')
+        })
+        socket.on('newPlayer', (player: Array<string>) => {
+            setPlayers(player);
         })
         socket.emit('joinRoom', { name: 'username', roomId: roomId })
     }, [socket])
@@ -50,25 +60,34 @@ const Room = () => {
         .reduce((x: any, y: any) => x + ' ' + y, '')
 
     const savePawn = (x: number, y: number, index: number) => {
-        setMovedPawn({x: x, y: y, index: index});
+        setMovedPawn({ x: x, y: y, index: index });
     }
 
     const socketMovePawn = (x: number, y: number) => {
         socket.emit('movePawn', {
             sender: 'username', roomId: roomId,
-            movement: { oldX: movedPawn.x, oldY: movedPawn.y, newX: x, newY: y }
+            movement: { oldX: movedPawn.x, oldY: movedPawn.y, newX: x, newY: y },
+            team: team
         })
     }
 
-    const movePawn = (Arraypawns: {x: number, y: number, team: string}[]) => {
+    const movePawn = (Arraypawns: { x: number, y: number, team: string }[]) => {
         setPawns(Arraypawns);
     }
 
     return (
         <div>
-            <div>Room</div>
+            <div>
+                <ul>
+                    {players.map((player) =>
+                        <li>{player}</li>
+                    )}
+                </ul>
+            </div>
             { gameStart
                 ? <div>
+                    <h3 style={{ color: `${team}` }}>You are {team}</h3>
+                    <h1 style={{ color: `${playingTeam}`}}>turn: {playingTeam}</h1>
                     <svg viewBox='-5 -5 75 75' style={{ background: 'white' }}>
                         <polygon points={outierPoints} stroke='black' strokeWidth='.5'
                             fill='transparent' strokeLinejoin="round" />
@@ -82,7 +101,17 @@ const Room = () => {
                         )}
                     </svg>
                 </div>
-                : <Button onClick={() => { launchGame() }} variant="success">Start the GAME</Button>
+                : <div>
+                    <Row className='align-items-center'>
+                        <Col sm={4} className="my-1">
+                            <span style={{ padding: '10px', border: 'solid grey' }}>{roomId}</span>
+                        </Col>
+                        <Col sm={0} className="my-1">
+                            <Button onClick={() => { navigator.clipboard.writeText(roomId) }}><FaRegCopy /></Button>
+                        </Col>
+                    </Row>
+                    <Button onClick={() => { launchGame() }} variant="success">Start the GAME</Button>
+                </div>
             }
         </div>
     )
