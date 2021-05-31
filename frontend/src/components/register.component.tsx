@@ -31,8 +31,7 @@ class RegisterForm extends Component<{}, { username: string, password: string }>
                 username: username,
                 password: password
             }
-        }
-        )
+        })
         .then(response => {
             console.log(response)
         })

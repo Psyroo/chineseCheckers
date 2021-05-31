@@ -8,6 +8,7 @@ import io from 'socket.io-client';
 import * as BoardInit from '../utils/board.utils';
 import Circle from '../components/circle.component';
 import Pawn from '../components/pawns.component';
+import axios from "axios";
 const ENDPOINT = "ws://localhost:3000/";
 
 const socket = io(ENDPOINT);
@@ -46,25 +47,24 @@ const Room = () => {
             movePawn(Arraypawns);
         })
         socket.on('wrongMove', () => {
-            console.log('movement impossible')
+            console.log('movement impossible');
         })
         socket.on('newPlayer', (player: Array<string>) => {
             setPlayers(player);
         })
-        socket.emit('joinRoom', { name: localStorage.getItem('username'), roomId: roomId })
         socket.on('gameEnd', (winner: string) => {
-            setGameEnd(true);
-            setWinner(winner);
+            endGame(winner);
         })
-        socket.emit('joinRoom', { name: 'username', roomId: roomId })
-    }, [socket])
+        socket.emit('joinRoom', { name: localStorage.getItem('username'), roomId: roomId })
+    }, [socket]);
 
     const launchGame = () => {
-        socket.emit('startGame', { roomId: roomId })
+        setGameEnd(false);
+        socket.emit('startGame', { roomId: roomId });
     }
 
     const outierPoints = boardOutier.map(o => [o[0], o[1]])
-        .reduce((x: any, y: any) => x + ' ' + y, '')
+        .reduce((x: any, y: any) => x + ' ' + y, '');
 
     const savePawn = (x: number, y: number, index: number) => {
         setMovedPawn({ x: x, y: y, index: index });
@@ -76,13 +76,36 @@ const Room = () => {
                 sender: 'username', roomId: roomId,
                 movement: { oldX: movedPawn.x, oldY: movedPawn.y, newX: x, newY: y },
                 team: team
-            })
-            setMovedPawn({x: 0, y: 0, index: undefined})
+            });
+            setMovedPawn({x: 0, y: 0, index: undefined});
         }
     }
 
     const movePawn = (Arraypawns: { x: number, y: number, team: string }[]) => {
         setPawns(Arraypawns);
+    }
+
+    const endGame = (winner: string) => {
+        setWinner(winner);
+        console.log(winner, team);
+        if (winner === team) {
+            axios.put(`http://localhost:3000/user/${localStorage.getItem('id')}`,
+            {
+                user: {
+                    wins: 1,
+                    loses: 0
+                }
+            });
+        } else {
+            axios.put(`http://localhost:3000/user/${localStorage.getItem('id')}`,
+            {
+                user: {
+                    wins: 0,
+                    loses: 1
+                }
+            });
+        }
+        setGameEnd(true);
     }
 
     return (
