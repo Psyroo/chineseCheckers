@@ -49,7 +49,7 @@ const Room = () => {
         socket.on('newPlayer', (player: Array<string>) => {
             setPlayers(player);
         })
-        socket.emit('joinRoom', { name: 'username', roomId: roomId })
+        socket.emit('joinRoom', { name: localStorage.getItem('username'), roomId: roomId })
     }, [socket])
 
     const launchGame = () => {

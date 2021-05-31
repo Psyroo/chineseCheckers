@@ -99,7 +99,7 @@ export class UsersService {
           winstreak: user.winstreak,
           token: this.generateJWT(user)
         };
-    
+
         return {user: userRO};
       }
 }

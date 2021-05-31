@@ -25,7 +25,10 @@ const LoginForm = () => {
             localStorage.setItem(
                 "username", username
             );
-            console.log(username)
+            localStorage.setItem(
+                "id", response.data.user.id
+            );
+            console.log(response.data.user.id)
             history.push({pathname: '/'})
         })
         .catch(error => {

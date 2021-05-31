@@ -9,7 +9,7 @@ const Profil = () => {
     const [data, setData] = useState<{wins: number, losses: number, winstreak: number}>({wins: 0, losses: 0, winstreak: 0})
 
    useEffect(() => {
-       axios.get('http://localhost:3000/user')
+       axios.get(`http://localhost:3000/user/me/${localStorage.getItem('id')}`)
        .then(res => {
         const wins = res.data.wins
         const losses = res.data.loses

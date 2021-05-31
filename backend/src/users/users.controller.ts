@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, Post, UsePipes, ValidationPipe, Param } from '@nestjs/common';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { User } from './users.entity';
 import { UserRO } from './users.interface';
@@ -12,6 +12,11 @@ export class UsersController {
     @Get()
     async findAll(): Promise<User[]> {
         return await this.userService.findAll()
+    }
+
+    @Get('/me/:id')
+    async findMe(@Param('id') id) : Promise<UserRO> {
+        return await this.userService.findById(id)
     }
 
     @Post()
@@ -28,8 +33,8 @@ export class UsersController {
         if (!_user) throw new HttpException({errors}, 401);
 
         const token = await this.userService.generateJWT(_user);
-        const {username, wins, loses, winstreak} = _user;
-        const user = {username, token, wins, loses, winstreak};
+        const {username, wins, loses, winstreak, id} = _user;
+        const user = {username, token, wins, loses, winstreak, id};
         return {user};
     }
 }
