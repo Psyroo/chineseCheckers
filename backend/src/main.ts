@@ -11,6 +11,7 @@ async function bootstrap() {
   .setDescription('The chinese checker API documentation')
   .setVersion('1.0')
   .addTag('Users')
+  .addTag('Room')
   .build()
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { validate } from 'class-validator'
 import { getRepository, Repository } from 'typeorm';
-import { CreateUserDto, LoginUserDto } from './dto';
+import { CreateUserDto, LoginUserDto, UpdateUserDto } from './dto';
 import { User } from './users.entity';
 import { UserRO } from './users.interface';
 import { SECRET } from '../config';
@@ -74,7 +74,20 @@ export class UsersService {
         }
     }
 
-    async remove(id: string): Promise<void> {
+    async updateStat(id: number, dto: UpdateUserDto): Promise<User> {
+        const user = await this.userRepository.findOne(id);
+
+        if (user) {
+            user.wins += dto.wins;
+            user.loses += dto.loses;
+        }
+        await this.userRepository.update({id: id}, dto);
+        return user;
+
+
+    }
+
+    async remove(id: number): Promise<void> {
         await this.userRepository.delete(id);
     }
 
