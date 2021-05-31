@@ -51,6 +51,7 @@ const Room = () => {
         socket.on('newPlayer', (player: Array<string>) => {
             setPlayers(player);
         })
+        socket.emit('joinRoom', { name: localStorage.getItem('username'), roomId: roomId })
         socket.on('gameEnd', (winner: string) => {
             setGameEnd(true);
             setWinner(winner);

@@ -29,22 +29,26 @@ function Home() {
     }
 
     return (
-        <div>
-            <div>Welcome</div>
-            <div>
+        <div className="d-flex flex-column">
+            <div className="d-flex justify-content-center align-items-center" style={{height: '13vh'}}>Home</div>
+            <div className="d-flex justify-content-center align-items-center" style={{height: '28vh'}}>
                 {localStorage.getItem('token')
-                        ? <p><Button variant="primary" onClick={() => createRoom()}>Create Game room</Button><br /><Button onClick={() => logout()} variant="outline-secondary">Logout</Button></p>
+                        ? <div>
+                            <div><Button onClick={() => logout()} variant="outline-secondary">Logout</Button></div>
+                            <div><Button variant="primary" onClick={() => createRoom()}>Create Game room</Button></div>
+                            <div className="d-flex justify-content-center align-items-center" style={{height: '20vh'}}>
+                                <Form onSubmit={joinRoom}>
+                                    <Form.Group controlId="formRoomId">
+                                        <Form.Label>Room Link</Form.Label>
+                                        <Form.Control value={roomId} onChange={(event) => {setRoomId(event.target.value)}} required placeholder="Enter Room Link"/>
+                                    </Form.Group>
+                                    <Button type="submit" variant="primary" onClick={() => joinRoom()}>Join Room</Button>
+                                </Form>
+                            </div>
+                        </div>
                         : <p><Button onClick={() => history.push({pathname: '/login'})} variant="outline-primary">Login</Button></p>
                     }
             </div>
-            <Button variant="primary" onClick={() => createRoom()}>Create Game room</Button>
-            <Form onSubmit={joinRoom}>
-                <Form.Group controlId="formRoomId">
-                    <Form.Label>Room Link</Form.Label>
-                    <Form.Control value={roomId} onChange={(event) => {setRoomId(event.target.value)}} required placeholder="Enter Room Link"/>
-                </Form.Group>
-            <Button type="submit" variant="primary" onClick={() => joinRoom()}>Join Room</Button>
-            </Form>
         </div>
     )
 }
