@@ -19,6 +19,7 @@ const Profil = () => {
 
     return(
         <div>
+            <Button onClick={() => history.push({pathname: '/'})} variant="success">Home</Button>
             <Container className="d-flex justify-content-center align-items-center" style={{height: '78vh'}}>
                 <Row>
                     <Card style={{ width: '25rem' }}>

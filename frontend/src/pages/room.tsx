@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Button, Col, Form, Row } from 'react-bootstrap';
+import React, { useState, useEffect } from "react";
+import { Button, Col, Row } from 'react-bootstrap';
 import { FaRegCopy } from 'react-icons/fa';
 import { useHistory, useLocation } from 'react-router-dom';
 
@@ -13,6 +13,8 @@ const ENDPOINT = "ws://localhost:3000/";
 const socket = io(ENDPOINT);
 
 const Room = () => {
+
+    const history = useHistory();
 
     const [gameStart, setGameStart] = useState(false);
     const [pawns, setPawns] = useState(BoardInit.initPawns());
@@ -51,13 +53,13 @@ const Room = () => {
         socket.on('newPlayer', (player: Array<string>) => {
             setPlayers(player);
         })
-        socket.emit('joinRoom', { name: localStorage.getItem('username'), roomId: roomId })
         socket.on('gameEnd', (winner: string) => {
             setGameEnd(true);
             setWinner(winner);
         })
-        socket.emit('joinRoom', { name: 'username', roomId: roomId })
+        socket.emit('joinRoom', { name: localStorage.getItem('username'), roomId: roomId })
     }, [socket])
+
 
     const launchGame = () => {
         socket.emit('startGame', { roomId: roomId })
@@ -96,7 +98,11 @@ const Room = () => {
             </div>
             <div>
                 {gameEnd
-                    ? <div><h1>The winner is {winner}</h1></div>
+                    ? <div>
+                        <h1>The winner is {winner}</h1>
+                        <Button onClick={() => { launchGame() }} variant="success">Restart the game</Button>
+                        <Button onClick={() => history.push({pathname: '/'})} variant="success">Home</Button>
+                    </div>
                     : <div>{gameStart
                         ? <div>
                             <h3 style={{ color: `${team}` }}>You are {team}</h3>

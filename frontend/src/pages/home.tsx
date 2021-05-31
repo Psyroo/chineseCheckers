@@ -35,6 +35,7 @@ function Home() {
                 {localStorage.getItem('token')
                         ? <div>
                             <div><Button onClick={() => logout()} variant="outline-secondary">Logout</Button></div>
+                            <div><Button onClick={() => history.push({pathname: '/profil'})} variant="outline-primary">Profil</Button></div>
                             <div><Button variant="primary" onClick={() => createRoom()}>Create Game room</Button></div>
                             <div className="d-flex justify-content-center align-items-center" style={{height: '20vh'}}>
                                 <Form onSubmit={joinRoom}>
