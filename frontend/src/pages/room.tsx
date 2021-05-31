@@ -153,7 +153,10 @@ const Room = () => {
                                     <Button onClick={() => { navigator.clipboard.writeText(roomId) }}><FaRegCopy /></Button>
                                 </Col>
                             </Row>
-                            <Button onClick={() => { launchGame() }} variant="success">Start the GAME</Button>
+                            {players.length >= 2
+                                ? <Button onClick={() => { launchGame() }} variant="success">Start the GAME</Button>
+                                : <p>Waiting for players</p>
+                            }
                         </div>
                     }</div>
                 }
