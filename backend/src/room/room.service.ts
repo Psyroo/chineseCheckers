@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PawnService } from "src/pawns/pawn.service";
+import { PawnService } from "../pawns/pawn.service";
 import { BoardService } from "../board/board.service";
 import { Pawn } from "../pawns/pawn.interface";
 import { v1 as uuidv1 } from 'uuid';
