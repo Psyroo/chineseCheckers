@@ -20,6 +20,8 @@ const Room = () => {
     const [players, setPlayers] = useState(['']);
     const [team, setTeam] = useState('black');
     const [playingTeam, setPlayingTeam] = useState('black');
+    const [gameEnd, setGameEnd] = useState(false);
+    const [winner, setWinner] = useState('black');
 
     const location = useLocation<{ roomId: string }>();
     const roomId = location.state.roomId;
@@ -50,6 +52,11 @@ const Room = () => {
             setPlayers(player);
         })
         socket.emit('joinRoom', { name: localStorage.getItem('username'), roomId: roomId })
+        socket.on('gameEnd', (winner: string) => {
+            setGameEnd(true);
+            setWinner(winner);
+        })
+        socket.emit('joinRoom', { name: 'username', roomId: roomId })
     }, [socket])
 
     const launchGame = () => {
@@ -64,11 +71,14 @@ const Room = () => {
     }
 
     const socketMovePawn = (x: number, y: number) => {
-        socket.emit('movePawn', {
-            sender: 'username', roomId: roomId,
-            movement: { oldX: movedPawn.x, oldY: movedPawn.y, newX: x, newY: y },
-            team: team
-        })
+        if (movedPawn.index !== undefined) {
+            socket.emit('movePawn', {
+                sender: 'username', roomId: roomId,
+                movement: { oldX: movedPawn.x, oldY: movedPawn.y, newX: x, newY: y },
+                team: team
+            })
+            setMovedPawn({x: 0, y: 0, index: undefined})
+        }
     }
 
     const movePawn = (Arraypawns: { x: number, y: number, team: string }[]) => {
@@ -84,35 +94,40 @@ const Room = () => {
                     )}
                 </ul>
             </div>
-            { gameStart
-                ? <div>
-                    <h3 style={{ color: `${team}` }}>You are {team}</h3>
-                    <h1 style={{ color: `${playingTeam}`}}>turn: {playingTeam}</h1>
-                    <svg viewBox='-5 -5 75 75' style={{ background: 'white' }}>
-                        <polygon points={outierPoints} stroke='black' strokeWidth='.5'
-                            fill='transparent' strokeLinejoin="round" />
-                        {boardSpot.map((points, index) =>
-                            <Circle key={index} x={points[0]} y={points[1]} scale={scale}
-                                onClick={() => { socketMovePawn(points[0], points[1]) }} />
-                        )}
-                        {pawns.map((pawn, index) =>
-                            <Pawn key={index} x={pawn.x} y={pawn.y} team={pawn.team}
-                                onClick={() => { savePawn(pawn.x, pawn.y, index) }} />
-                        )}
-                    </svg>
-                </div>
-                : <div>
-                    <Row className='align-items-center'>
-                        <Col sm={4} className="my-1">
-                            <span style={{ padding: '10px', border: 'solid grey' }}>{roomId}</span>
-                        </Col>
-                        <Col sm={0} className="my-1">
-                            <Button onClick={() => { navigator.clipboard.writeText(roomId) }}><FaRegCopy /></Button>
-                        </Col>
-                    </Row>
-                    <Button onClick={() => { launchGame() }} variant="success">Start the GAME</Button>
-                </div>
-            }
+            <div>
+                {gameEnd
+                    ? <div><h1>The winner is {winner}</h1></div>
+                    : <div>{gameStart
+                        ? <div>
+                            <h3 style={{ color: `${team}` }}>You are {team}</h3>
+                            <h1 style={{ color: `${playingTeam}` }}>turn: {playingTeam}</h1>
+                            <svg viewBox='-5 -5 75 75' style={{ background: 'white' }}>
+                                <polygon points={outierPoints} stroke='black' strokeWidth='.5'
+                                    fill='transparent' strokeLinejoin="round" />
+                                {boardSpot.map((points, index) =>
+                                    <Circle key={index} x={points[0]} y={points[1]} scale={scale}
+                                        onClick={() => { socketMovePawn(points[0], points[1]) }} />
+                                )}
+                                {pawns.map((pawn, index) =>
+                                    <Pawn key={index} x={pawn.x} y={pawn.y} team={pawn.team}
+                                        onClick={() => { savePawn(pawn.x, pawn.y, index) }} />
+                                )}
+                            </svg>
+                        </div>
+                        : <div>
+                            <Row className='align-items-center'>
+                                <Col sm={4} className="my-1">
+                                    <span style={{ padding: '10px', border: 'solid grey' }}>{roomId}</span>
+                                </Col>
+                                <Col sm={0} className="my-1">
+                                    <Button onClick={() => { navigator.clipboard.writeText(roomId) }}><FaRegCopy /></Button>
+                                </Col>
+                            </Row>
+                            <Button onClick={() => { launchGame() }} variant="success">Start the GAME</Button>
+                        </div>
+                    }</div>
+                }
+            </div>
         </div>
     )
 }

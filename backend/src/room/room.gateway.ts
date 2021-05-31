@@ -74,6 +74,10 @@ export class RoomGateway implements OnGatewayInit {
                 }
             })
             this.server.to(data.roomId).emit('movePawn', currentGame.pawns, this.teams[newTurn]);
+            if (this.roomService.checkEnd(this.board, currentGame.pawns, data.team)) {
+                client.emit('Win');
+                this.server.to(data.roomId).emit('gameEnd', data.team);
+            }
         }
     }
 
