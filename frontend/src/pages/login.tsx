@@ -4,6 +4,7 @@ import React from "react"
 function loginPage() {
     return (
         <div>
+            <h1>Login</h1>
             <LoginForm />
         </div>
     )
